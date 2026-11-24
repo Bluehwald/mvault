@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Miro Vault</title>
+  <link rel="icon" href="icons/icon-32.png">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <img src="icons/icon-48.png" alt="" width="40" height="40">
+      <div>
+        <h1>Miro Vault</h1>
+        <p class="sub">Alle Daten bleiben lokal in diesem Browser.</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="lock-state" class="badge"></span>
+      <button id="lock-btn" class="btn" type="button" hidden></button>
+      <button id="settings-btn" class="btn ghost" type="button" aria-expanded="false">Einstellungen</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="perm-banner" class="banner warn" hidden>
+      <span>Miro Vault hat noch keinen Zugriff auf miro.com und kann deshalb weder Boards erkennen noch Passwörter speichern.</span>
+      <button id="perm-btn" class="btn primary" type="button">Zugriff erlauben</button>
+    </div>
+
+    <section id="setup-card" class="card" hidden>
+      <h2>Master-Passwort anlegen</h2>
+      <p>Damit werden deine Board-Passwörter verschlüsselt. Es wird nirgendwo gespeichert. <strong>Wenn du es vergisst, sind die gespeicherten Passwörter verloren.</strong></p>
+      <form id="setup-form" class="stack">
+        <label>Master-Passwort <input type="password" name="pw" autocomplete="new-password" minlength="8" required></label>
+        <label>Wiederholen <input type="password" name="pw2" autocomplete="new-password" minlength="8" required></label>
+        <div><button class="btn primary" type="submit">Tresor anlegen</button></div>
+        <p class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="unlock-card" class="card" hidden>
+      <h2>Tresor entsperren</h2>
+      <form id="unlock-form" class="row">
+        <input type="password" name="pw" placeholder="Master-Passwort" autocomplete="current-password" required aria-label="Master-Passwort">
+        <button class="btn primary" type="submit">Entsperren</button>
+      </form>
+      <p class="error" role="alert"></p>
+    </section>
+
+    <section id="settings" class="card" hidden>
+      <h2>Einstellungen</h2>
+      <form id="settings-form" class="stack">
+        <label class="check"><input type="checkbox" name="autofill"> Gespeicherte Passwörter automatisch einfügen</label>
+        <label class="check"><input type="checkbox" name="autoSubmit"> Nach dem Einfügen automatisch bestätigen</label>
+        <label>Automatisch sperren nach <span class="row inline"><input type="number" name="autoLockMinutes" min="0" max="1440" step="1"> Minuten Inaktivität (0 = erst beim Schließen des Browsers)</span></label>
+        <p class="hint saved-hint" aria-live="polite"></p>
+      </form>
+
+      <h3>Master-Passwort ändern</h3>
+      <form id="master-form" class="stack">
+        <label>Aktuelles Passwort <input type="password" name="old" autocomplete="current-password" required></label>
+        <label>Neues Passwort <input type="password" name="new" autocomplete="new-password" minlength="8" required></label>
+        <label>Neues Passwort wiederholen <input type="password" name="new2" autocomplete="new-password" minlength="8" required></label>
+        <div><button class="btn" type="submit">Ändern</button></div>
+        <p class="error" role="alert"></p>
+      </form>
+
+      <h3>Sicherung</h3>
+      <p class="hint">Der Export enthält die Board-Liste und die <em>verschlüsselten</em> Passwörter. Zum Entschlüsseln braucht man weiterhin das Master-Passwort.</p>
+      <div class="row wrap">
+        <button id="export-btn" class="btn" type="button">Exportieren</button>
+        <label class="btn file-btn">Importieren… <input id="import-file" type="file" accept="application/json,.json" hidden></label>
+        <button id="wipe-btn" class="btn danger" type="button">Alles löschen</button>
+      </div>
+      <p id="backup-msg" class="hint" aria-live="polite"></p>
+    </section>
+
+    <section class="boards">
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Boards durchsuchen…" aria-label="Boards durchsuchen">
+        <select id="sort" aria-label="Sortierung">
+          <option value="lastVisited">Zuletzt besucht</option>
+          <option value="title">Name</option>
+          <option value="visits">Meiste Besuche</option>
+          <option value="firstVisited">Zuerst entdeckt</option>
+        </select>
+        <label class="check"><input id="only-pw" type="checkbox"> nur mit Passwort</label>
+        <button id="add-btn" class="btn" type="button" aria-expanded="false">+ Board hinzufügen</button>
+      </div>
+
+      <form id="add-form" class="card stack" hidden>
+        <label>Board-URL <input name="url" type="url" placeholder="https://miro.com/app/board/…" required></label>
+        <label>Name (optional) <input name="title" type="text"></label>
+        <label>Passwort (optional) <input name="password" type="password" autocomplete="off"></label>
+        <div class="row"><button class="btn primary" type="submit">Hinzufügen</button><button class="btn ghost" type="button" data-cancel>Abbrechen</button></div>
+        <p class="error" role="alert"></p>
+      </form>
+
+      <p id="stats" class="stats"></p>
+      <ul id="board-list" class="board-list"></ul>
+      <div id="empty" class="empty" hidden>
+        <p><strong>Noch keine Boards.</strong></p>
+        <p>Öffne ein Miro-Board – es erscheint dann automatisch hier.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
